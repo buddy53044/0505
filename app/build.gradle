@@ -23,8 +23,6 @@ android {
         manifestPlaceholders = [ GOOGLE_API_KEY: localProperties['GOOGLE_API_KEY']]
         buildConfigField "String", "GOOGLE_API_KEY", localProperties['GOOGLE_API_KEY']
         buildConfigField "String", "CHAT_GPT_KEY", localProperties['CHAT_GPT_KEY']
-        buildConfigField "String", "food_KEY", localProperties['food_KEY']
-        buildConfigField "String", "food_ID", localProperties['food_ID']
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
