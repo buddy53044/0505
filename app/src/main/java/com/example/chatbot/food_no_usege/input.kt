@@ -1,4 +1,4 @@
-package com.example.chatbot.food
+package com.example.chatbot.food_no_usege
 
 import com.google.gson.annotations.SerializedName
 

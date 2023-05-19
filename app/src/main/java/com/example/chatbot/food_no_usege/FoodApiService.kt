@@ -1,7 +1,7 @@
 package com.example.chatbot
 
-import com.example.chatbot.food.Posts
-import com.example.chatbot.food.Test
+import com.example.chatbot.food_no_usege.Posts
+import com.example.chatbot.food_no_usege.Test
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
