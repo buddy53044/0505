@@ -1,5 +1,6 @@
 package com.example.chatbot.Adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,6 +26,7 @@ class RestaurantListAdapter(var MsgList: MutableList<data>) :
      * 設定資料
      */
 
+    var onCommentButtonClickListener: OnCommentButtonClickListener? = null
 
     inner class ItemViewHolder(val binding: ShopItemBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -45,7 +47,14 @@ class RestaurantListAdapter(var MsgList: MutableList<data>) :
         holder.binding.Address.text = data.formatted_address
         holder.binding.Shopname.text = data.name
         holder.binding.PhoneNumber.text = data.formatted_phone_number
-        Picasso.get().load(data.image).into(holder.binding.imageView)
+        Log.d("dataaddress", data.formatted_address)
+        Log.d("dataname", data.name)
+        Log.d("dataphonenumber", data.formatted_phone_number)
+
+        Picasso.get()
+            .load(data.image)
+            .error(R.drawable.error_image)
+            .into(holder.binding.imageView)
         holder.binding.imageView.setOnClickListener()
         {
             onClick.invoke(data)
@@ -53,9 +62,10 @@ class RestaurantListAdapter(var MsgList: MutableList<data>) :
 
         holder.binding.btnComment.setOnClickListener()
         {
-            onCommentClick.invoke(data)
+            onCommentButtonClickListener?.onCommentButtonClick(data)
         }
-        val layoutManager = LinearLayoutManager(holder.binding.root.context, LinearLayoutManager.HORIZONTAL, false)
+        val layoutManager =
+            LinearLayoutManager(holder.binding.root.context, LinearLayoutManager.HORIZONTAL, false)
 //        holder.binding.rv.layoutManager = layoutManager
 //        val nestedAdapter = NestedImageAdapter(data.photoList)
 //        holder.binding.rv.adapter = nestedAdapter
@@ -63,6 +73,9 @@ class RestaurantListAdapter(var MsgList: MutableList<data>) :
     }
 
     override fun getItemCount(): Int = MsgList.size
+
+    interface OnCommentButtonClickListener {
+        fun onCommentButtonClick(data: data)
+    }
 }
-// TODO:Activity transition
 

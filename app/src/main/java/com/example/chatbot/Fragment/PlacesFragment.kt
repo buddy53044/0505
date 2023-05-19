@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import coil.load
@@ -29,24 +31,33 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import com.example.chatbot.*
+import com.example.chatbot.Method.hideKeyboard
 import com.example.chatbot.databinding.ShopItemBinding
-import com.example.chatbot.placesDetails.PlacesDetails
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_first.*
 import kotlinx.android.synthetic.main.shop_item.*
 
 
-private var _binding : FragmentSecondBinding? = null
+private var _binding: FragmentSecondBinding? = null
 private val binding get() = _binding!!
 private lateinit var mMap: GoogleMap
 private lateinit var mapFragment: SupportMapFragment
 private lateinit var Shopbinding: ShopItemBinding
-private lateinit var placeid :String
+private lateinit var placeid: String
+
+private lateinit var name: String
+
+
 class PlacesFragment : Fragment() {
     companion object {
         private const val TAG = "PlacesFragment"
         private const val DEFAULT_ZOOM = 18F
         private const val DEFAULT_LATITUDE = 25.043871531367014
         private const val DEFAULT_LONGITUDE = 121.53453374432904
+
+
     }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -55,21 +66,37 @@ class PlacesFragment : Fragment() {
         // Inflate the layout for this fragment
         return binding.root
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         checkPermission()
         doInitialize()//初始化
-        SearchShop()
+        setListener()
+        trans()
     }
+
+    private fun trans() {
+        binding.imgPreview.setOnClickListener {
+            var b = Bundle()
+            b.putString("name", name)
+            val fragment = ThirdFragment()
+            fragment.arguments = b
+            requireActivity().view_pager.setCurrentItem(2)
+            requireActivity().tabLayout.getTabAt(2)?.select()
+        }
+    }
+
     private fun doInitialize() {
         // 初始化地圖
         mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(mapCallback)
     }
+
     @SuppressLint("MissingPermission")
     private val mapCallback = OnMapReadyCallback { googleMap ->
         mMap = googleMap
@@ -81,6 +108,7 @@ class PlacesFragment : Fragment() {
             uiSettings.isMapToolbarEnabled = true
         }
     }
+
     @SuppressLint("PotentialBehaviorOverride")
     private fun initGoogleMap() {
         if (!::mMap.isInitialized) return
@@ -95,9 +123,14 @@ class PlacesFragment : Fragment() {
         mMap.setOnMarkerClickListener { marker ->
             val mask = marker.snippet.toString().split(",")
             val placeId = mask[0]
-            val name = mask[1]
+            name = mask[1]
             val photoReference = mask[2]
             binding.apply {
+
+                binding.tvPreview.visibility = View.VISIBLE
+//                binding.imgPreview.visibility = View.VISIBLE
+                binding.frameLayout.visibility = View.VISIBLE
+
                 tvPreview.text = name
                 // 讀取Google Place圖片方法
                 if (photoReference.isNotEmpty())
@@ -109,109 +142,53 @@ class PlacesFragment : Fragment() {
             true
         }
     }
-//    private fun findNearSearch() {
-//        Apiclient.googlePlaces.getPlaceSearch(
-//            location = "${ThirdFragment.DEFAULT_LATITUDE},${ThirdFragment.DEFAULT_LONGITUDE}",
-//            radius = "1000",
-//            token = "20",
-//            language = "zh-TW",
-//            keyword = search,
-//            key = BuildConfig.GOOGLE_API_KEY
-//        ).enqueue(object : Callback<PlacesSearch> {
-//            override fun onResponse(
-//                call: Call<PlacesSearch>,
-//                response: Response<PlacesSearch>
-//            ) {
-//                response.body()?.let { res ->
-//                    res.results.forEach { result ->
-//                        CoroutineScope(Dispatchers.Main).launch {
-//                            val markerOption = MarkerOptions().apply {
-//                                position(
-//                                    LatLng(
-//                                        result.geometry.location.lat,
-//                                        result.geometry.location.lng
-//                                    )
-//                                )//取得經緯度
-//                                title(result.name)//取得店家名稱
-//                                snippet("${result.place_id},${result.name},${result.photos[0].photo_reference}")
-//                            }
-//                            mMap.addMarker(markerOption)
-//                        }
-//                    }
-//                }
-//            }
-//            override fun onFailure(
-//                call: Call<PlacesSearch>,
-//                t: Throwable
-//            ) {
-//                t.printStackTrace()
-//                Method.logE(TAG, "onFailure: ${t.message}")
-//            }
-//        })
-//    }
-    private fun checkPermission(){
-        if (ActivityCompat.checkSelfPermission(requireContext(),
-                android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
-            ActivityCompat.checkSelfPermission(requireActivity()
-                , android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            val strings = arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION)
-            // 請求權限
-            ActivityCompat.requestPermissions(requireActivity(), strings, 1)
-        }
-    }
-    private fun SearchShop() {
-        val search = binding.editText.text.toString()
 
-        binding.btn.setOnClickListener()
-        {
-//                val manager = requireActivity().supportFragmentManager.beginTransaction()
-//                manager.add(R.id.map, ShopFragment())
-//                    .addToBackStack(null)//在map新增一個叫做ShopFragment的Fragment
-//                manager.hide(PlacesFragment())//把map原本的PlacesFragment hide
-//                manager.show(ShopFragment()).commit()
-            Apiclient.googlePlaces.getPlaceSearchWithKeyword(
-                location = "$DEFAULT_LATITUDE,$DEFAULT_LONGITUDE",
-                radius = 500L,
-                keyword = search,
-                key = BuildConfig.GOOGLE_API_KEY
-            ).enqueue(object : Callback<PlacesSearch> {
-                override fun onResponse(
-                    call: Call<PlacesSearch>,
-                    response: Response<PlacesSearch>
-                ) {
-                    response.body()?.let { res ->
-                        res.results.forEach { result ->
-                            placeid = result.place_id
-                        }
-                    }
-                    DetailSearch()
-                }
-                override fun onFailure(
-                    call: Call<PlacesSearch>,
-                    t: Throwable
-                ) {
-                    t.printStackTrace()
-                    Method.logE(TAG, "onFailure: ${t.message}")
-                }
-            })
+    private fun setListener() {
+        binding.btn.setOnClickListener {
+            mMap.clear()
+            var keyword = binding.editText.text.toString()
+            if (keyword != "") {
+                findNearSearch(keyword)
+                binding.editText.hideKeyboard()
+            } else {
+                Toast.makeText(requireContext(), "請輸入要查詢的資訊", Toast.LENGTH_SHORT).show()
+            }
         }
     }
-    private fun DetailSearch(){
-        Apiclient.googlePlaces.getPlaceDetails(
-            placeID = placeid,
+
+    private fun findNearSearch(keyword: String) {
+        Apiclient.googlePlaces.getPlaceSearchWithKeyword(
+            location = "${DEFAULT_LATITUDE},${DEFAULT_LONGITUDE}",
+            radius = 500,
+            keyword = keyword,
             language = "zh-TW",
             key = BuildConfig.GOOGLE_API_KEY
-        ).enqueue(object : Callback<PlacesDetails> {
+        ).enqueue(object : Callback<PlacesSearch> {
             override fun onResponse(
-                call: Call<PlacesDetails>,
-                response: Response<PlacesDetails>
+                call: Call<PlacesSearch>,
+                response: Response<PlacesSearch>
             ) {
                 response.body()?.let { res ->
-
+                    res.results.forEach { result ->
+                        CoroutineScope(Dispatchers.Main).launch {
+                            val markerOption = MarkerOptions().apply {
+                                position(
+                                    LatLng(
+                                        result.geometry.location.lat,
+                                        result.geometry.location.lng
+                                    )
+                                )//取得經緯度
+                                title(result.name)//取得店家名稱
+                                snippet("${result.place_id},${result.name},${result.photos[0].photo_reference}")
+                            }
+                            mMap.addMarker(markerOption)
+                        }
+                    }
                 }
             }
+
             override fun onFailure(
-                call: Call<PlacesDetails>,
+                call: Call<PlacesSearch>,
                 t: Throwable
             ) {
                 t.printStackTrace()
@@ -219,8 +196,28 @@ class PlacesFragment : Fragment() {
             }
         })
     }
+
+    private fun checkPermission() {
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                android.Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED ||
+            ActivityCompat.checkSelfPermission(
+                requireActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            val strings = arrayOf(
+                android.Manifest.permission.ACCESS_FINE_LOCATION,
+                android.Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+            // 請求權限
+            ActivityCompat.requestPermissions(requireActivity(), strings, 1)
+        }
+    }
 }
 
+
+//todo 點擊圖片後跳轉到餐廳資訊，具體之後說
 
 
 

@@ -13,43 +13,55 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/imgPreview"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@color/cardview_shadow_end_color"
+    <FrameLayout
+        android:id="@+id/frameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:layout_margin="20dp"
+        android:background="@color/quantum_amber50"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent=".3"
-        app:layout_constraintHorizontal_bias="0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintVertical_bias="0"
-        app:layout_constraintWidth_percent=".5"
-        tools:src="@tools:sample/backgrounds/scenic" />
+        android:visibility="invisible"
+
+        >
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imgPreview"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_margin="10dp"
+            android:background="@color/quantum_amber50"
+            android:scaleType="centerCrop"
+            tools:src="@tools:sample/backgrounds/scenic" />
+    </FrameLayout>
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvPreview"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
         android:autoSizeTextType="uniform"
-        android:background="@color/white"
+        android:background="@color/quantum_amber50"
         android:gravity="center"
-        android:textColor="@android:color/black"
-        android:textSize="24sp"
+        android:textColor="@android:color/holo_blue_light"
+        android:textSize="18sp"
         android:textStyle="bold"
+        android:visibility="invisible"
         app:autoSizeTextType="uniform"
-        app:layout_constraintEnd_toEndOf="@+id/imgPreview"
-        app:layout_constraintStart_toStartOf="@+id/imgPreview"
-        app:layout_constraintTop_toBottomOf="@+id/imgPreview"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/frameLayout"
+
         tools:text="@string/app_name" />
 
     <EditText
         android:id="@+id/editText"
         style="@style/Widget.AppCompat.AutoCompleteTextView"
-        android:layout_width="225dp"
+        android:layout_width="220dp"
         android:layout_height="40dp"
         android:layout_gravity="center"
         android:layout_marginStart="12dp"
@@ -57,18 +69,20 @@
         android:layout_weight="1"
         android:background="@drawable/button_corner_shape_gray_edtext"
         android:hint="在這裡搜尋"
-        android:maxLines="1"
+        android:inputType="textMultiLine"
+        android:maxLines="5"
+        android:scrollbars="vertical"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/btn"
-        android:layout_width="60dp"
+        android:layout_width="65dp"
         android:layout_height="40dp"
+        android:layout_marginLeft="12dp"
         android:background="@drawable/button_corner_shape_gray_edtext"
         android:text="搜尋"
         android:textColor="#42D363"
-        android:layout_marginLeft="12dp"
         app:layout_constraintStart_toEndOf="@id/editText"
         app:layout_constraintTop_toTopOf="@id/editText" />
 
