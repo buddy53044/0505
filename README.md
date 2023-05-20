@@ -3,7 +3,8 @@
 
 需要有google cloud api 和openai api
 GOOGLE_API_KEY="*"
+
 CHAT_GPT_KEY="*"
 
-演示
+演示:
 https://youtu.be/iVQZiD-WLJU
